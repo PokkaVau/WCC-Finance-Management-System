@@ -187,9 +187,13 @@ class AuthManager {
     const appContainer = document.querySelector('.app-container');
 
     if (!this.isAuthenticated()) {
+      document.documentElement.classList.add('not-authenticated');
+      document.documentElement.classList.remove('is-authenticated');
       if (loginWrapper) loginWrapper.style.display = 'flex';
       if (appContainer) appContainer.style.display = 'none';
     } else {
+      document.documentElement.classList.add('is-authenticated');
+      document.documentElement.classList.remove('not-authenticated');
       if (loginWrapper) loginWrapper.style.display = 'none';
       if (appContainer) appContainer.style.display = 'flex';
     }

@@ -23,10 +23,41 @@
   <link rel="stylesheet" href="css/variables.css">
   <link rel="stylesheet" href="css/main.css">
   <link rel="stylesheet" href="css/components.css">
+
+  <!-- Immediate Authentication Gating (Prevents Flash of Unauthenticated Content) -->
+  <script>
+    (function() {
+      try {
+        var session = localStorage.getItem('WCC_AUTH_SESSION');
+        if (session) {
+          var parsed = JSON.parse(session);
+          if (parsed && parsed.user && (!parsed.expiresAt || Date.now() <= parsed.expiresAt)) {
+            document.documentElement.classList.add('is-authenticated');
+            return;
+          }
+        }
+      } catch(e) {}
+      document.documentElement.classList.add('not-authenticated');
+    })();
+  </script>
+  <style>
+    html:not(.is-authenticated) .app-container {
+      display: none !important;
+    }
+    html.not-authenticated #login-screen-wrapper {
+      display: flex !important;
+    }
+    html.is-authenticated #login-screen-wrapper {
+      display: none !important;
+    }
+    html.is-authenticated .app-container {
+      display: flex !important;
+    }
+  </style>
 </head>
 <body>
 
-  <div class="app-container">
+  <div class="app-container" style="display:none;">
     <!-- Collapsible Sidebar Navigation -->
     <aside class="sidebar" id="sidebar">
       <div class="sidebar-header">
@@ -1705,7 +1736,7 @@
   <!-- =========================================================================
        LOGIN SCREEN OVERLAY (STRICT AUTHENTICATION GATE)
        ========================================================================= -->
-  <div id="login-screen-wrapper" style="display:none; position:fixed; inset:0; background:linear-gradient(135deg, var(--bg-page) 0%, #EAEFF6 100%); z-index:9990; align-items:center; justify-content:center; padding:20px;">
+  <div id="login-screen-wrapper" style="display:flex; position:fixed; inset:0; background:linear-gradient(135deg, var(--bg-page) 0%, #EAEFF6 100%); z-index:9990; align-items:center; justify-content:center; padding:20px;">
     <div class="card" style="width:100%; max-width:440px; box-shadow:var(--shadow-xl); border-radius:var(--radius-xl); overflow:hidden;">
       <div style="background:linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 60%, var(--accent) 100%); padding:32px 28px; text-align:center; color:#fff; position:relative;">
         <img src="WCC_logo.png" alt="WCC Logo" class="login-logo-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
